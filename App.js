@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
 
-mongoose.connect("mongodb://parkseahaun:psh11080@ds035385.mongolab.com:35385/psh001");
+mongoose.connect(process.env.MonGo_DB);
 var db = mongoose.connection;
 db.once("open", function () {
   console.log("DB Connected!");
@@ -29,24 +29,48 @@ Data.findOne({name:"MyData"}, function(err,data){
 app.set("view engine", 'ejs');
 app.use(express.static(__dirname + '/public'));
 
-var data={count:0};
 app.get('/', function (req, res) {
-  data.count++;
-  res.render('Web_EJS',data);
+  Data.findOne({name:"MyData"}, function(err,data){
+    if(err) return console.log("Data ERROR:",err);
+    data.count++;
+    data.save(function (err) {
+      if(err) return console.log("Data ERROR:",err);
+      res.render('Web_EJS',data);
+    });
+  });
 });
 app.get('/reset', function (req, res) {
-  data.count=0;
-  res.render('Web_EJS',data);
+  setCounter(res,0);
 });
 app.get('/set/count', function (req, res) {
-  if(req.query.count) data.count=req.query.count;
-  res.render('Web_EJS',data);
+  if(req.query.count) setCounter(res,req.query.count);
+  else getCounter(res);
 });
 app.get('/set/:num', function (req, res) {
-  data.count=count=req.params.num;
-  res.render('Web_EJS');
+  if(req.query.count) setCounter(res,req.params.count);
+  else getCounter(res);
 });
 
-app.listen(3000, function() {
+function setCounter(res,num) {
+  console.log("setCounter!");
+  Data.findOne({name:"MyData"}, function(err,data){
+    if(err) return console.log("Data ERROR:",err);
+    data.count=num;
+    data.save(function (err) {
+        if(err) return console.log("Data ERROR:",err);
+        res.render('Web_EJS',data);
+    });
+  });
+}
+
+function detCounter(res) {
+  console.log("getCounter!");
+  Data.findOne({name:"MyData"}, function(err,data){
+    if(err) return console.log("Data ERROR:",err);
+        res.render('Web_EJS',data);
+    });
+}
+
+app.listen(8000, function() {
   console.log('Server On!');
 });
