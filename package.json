@@ -1,5 +1,5 @@
 {
-  "name": "ayapp",
+  "name": "myapp",
   "version": "1.0.0",
   "description": "",
   "main": "App.js",
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/ParkSeaHaun/WebProject#readme",
   "dependencies": {
-    "express": "^4.13.3"
+    "mongoose": "^4.3.3"
   }
 }
